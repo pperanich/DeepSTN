@@ -6,7 +6,7 @@ from __future__ import print_function
 from keras.layers import (
     Input,
     Activation,
-    merge,
+    add,
     Dense,
     Reshape
 )
@@ -17,7 +17,7 @@ from keras.models import Model
 
 
 def _shortcut(input, residual):
-    return merge([input, residual], mode='sum')
+    return add([input, residual])
 
 
 def _bn_relu_conv(nb_filter, nb_row, nb_col, subsample=(1, 1), bn=False):
@@ -25,7 +25,7 @@ def _bn_relu_conv(nb_filter, nb_row, nb_col, subsample=(1, 1), bn=False):
         if bn:
             input = BatchNormalization(mode=0, axis=1)(input)
         activation = Activation('relu')(input)
-        return Convolution2D(nb_filter=nb_filter, nb_row=nb_row, nb_col=nb_col, subsample=subsample, border_mode="same")(activation)
+        return Convolution2D(nb_filter, (nb_row, nb_col), strides=subsample, padding="same")(activation)
     return f
 
 
@@ -41,7 +41,7 @@ def ResUnits(residual_unit, nb_filter, repetations=1):
     def f(input):
         for i in range(repetations):
             init_subsample = (1, 1)
-            input = residual_unit(nb_filter=nb_filter,
+            input = residual_unit(nb_filter,
                                   init_subsample=init_subsample)(input)
         return input
     return f
@@ -66,14 +66,14 @@ def stresnet(c_conf=(3, 2, 32, 32), p_conf=(3, 2, 32, 32), t_conf=(3, 2, 32, 32)
             main_inputs.append(input)
             # Conv1
             conv1 = Convolution2D(
-                nb_filter=CF, nb_row=3, nb_col=3, border_mode="same")(input)
+                CF, (3, 3), padding="same")(input)
             # [nb_residual_unit] Residual Units
             residual_output = ResUnits(_residual_unit, nb_filter=CF,
                               repetations=nb_residual_unit)(conv1)
             # Conv2
             activation = Activation('relu')(residual_output)
             conv2 = Convolution2D(
-                nb_filter=nb_flow, nb_row=3, nb_col=3, border_mode="same")(activation)
+                nb_flow, (3, 3), padding="same")(activation)
             outputs.append(conv2)
 
     # parameter-matrix-based fusion
@@ -84,7 +84,7 @@ def stresnet(c_conf=(3, 2, 32, 32), p_conf=(3, 2, 32, 32), t_conf=(3, 2, 32, 32)
         new_outputs = []
         for output in outputs:
             new_outputs.append(iLayer()(output))
-        main_output = merge(new_outputs, mode='sum')
+        main_output = add(new_outputs)
 
     # fusing with external component
     if external_dim != None and external_dim > 0:
@@ -101,7 +101,7 @@ def stresnet(c_conf=(3, 2, 32, 32), p_conf=(3, 2, 32, 32), t_conf=(3, 2, 32, 32)
         print('external_dim:', external_dim)
 
     main_output = Activation('tanh')(main_output)
-    model = Model(input=main_inputs, output=main_output)
+    model = Model(inputs=main_inputs, outputs=main_output)
 
     return model
 
