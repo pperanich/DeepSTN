@@ -60,7 +60,7 @@ poi = np.load(os.path.dirname(os.path.realpath(__file__)) + '/DATA/dataBikeNYC/p
 #the number of repetition and if retrain the model
 iterate_num=10
 
-XDST=0  #DST
+XDST=1  #DST
 X11=0   #DSTN+ResPlus+PoI&Time
 X10=1   #DSTN+ResPlus
 X01=0   #DSTN+PoI&Time
