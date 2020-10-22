@@ -620,12 +620,12 @@ X_train,T_train,P_train,Y_train,X_test,T_test,P_test,Y_test,MM=prepare_data(all_
  
 np.set_printoptions(precision=4, suppress=True)
 print('MODEL                     RMSE  MAE')
-if 0:
+if 1:
     print('ResNet                  :',end=' ')
     [RMSE,MAE]=np.load(os.path.dirname(os.path.realpath(__file__)) + '/DST_0/SCORE/dst_score.npy')
     for_show=np.concatenate([RMSE,MAE],axis=1)*MM/2
     print(for_show)   
-if 0:
+if 1:
     print('DeepSTN                 :',end=' ')
     [RMSE,MAE]=np.load(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_00/SCORE/DeepSTN_00_score.npy')
     for_show=np.concatenate([RMSE,MAE],axis=1)*MM/2
@@ -643,7 +643,7 @@ if 0:
     for_show=np.concatenate([RMSE,MAE],axis=1)*MM/2
     for_show=np.mean(for_show,axis=0)
     print(for_show)   
-if 1:
+if 0:
     print('DeepSTN+ResPlus+PoI&Time:',end=' ')
     [RMSE,MAE]=np.load(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_11/SCORE/DeepSTN_11_score3.npy')
     for_show=np.concatenate([RMSE,MAE],axis=1)*MM/2
