@@ -7,7 +7,10 @@ from keras.layers import Input,Activation,Dropout,BatchNormalization,AveragePool
 from keras.layers import Lambda,Reshape,Concatenate,Add,Permute,TimeDistributed
 from keras.models import Model
 from keras.layers.convolutional import Conv2D
-import PPT3_network.metrics as metrics
+# import PPT3_network.metrics as metrics
+import os, sys
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+import metrics
 
 # Relu-BN-Conv2D 3x3
 def conv_unit0(Fin,Fout,drop,H,W):

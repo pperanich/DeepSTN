@@ -1,4 +1,7 @@
 #from __future__ import print_function
+import os, sys
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+print(os.path.dirname(os.path.realpath(__file__)))
 from DATA.lzq_read_data_time_poi import lzq_load_data
 from keras.callbacks import ModelCheckpoint
 #import cPickle as pickle
@@ -15,16 +18,13 @@ np.random.seed(seed)
 #from ipdb import set_trace
 #set_trace()
 
-#for GPU in Lab
-device=6
-
-import os
-os.environ["CUDA_VISIBLE_DEVICES"]=str(device)
 import tensorflow as tf  #from V1707
-config=tf.ConfigProto()  #from V1707
+device_name = tf.test.gpu_device_name()
+os.environ["CUDA_VISIBLE_DEVICES"]=device_name
+config=tf.compat.v1.ConfigProto()  #from V1707
 config.gpu_options.allow_growth=True  #from V1707
 #config.gpu_options.per_process_gpu_memory_fraction=0.5
-sess=tf.Session(config=config)  #from V1707
+sess=tf.compat.v1.Session(config=config)  #from V1707
 #import keras.backend.tensorflow_backend as KTF
 #KTF._set_session(tf.Session(config=config))
 import setproctitle  #from V1707
@@ -59,8 +59,8 @@ iterate_num=10
 XDST=0  #DST
 X11=1   #DSTN+ResPlus+PoI&Time
 X10=1   #DSTN+ResPlus
-X01=0   #DSTN+PoI&Time
-X00=0   #DSTN
+X01=1   #DSTN+PoI&Time
+X00=1   #DSTN
 
 trainDST=1  #DST
 train11=1   #DSTN+ResPlus+PoI&Time
@@ -118,7 +118,7 @@ if XDST:
             
         time_start=time.time()
             
-        F='DST_MODEL/dst_model_'+str(iterate)+'_.hdf5'
+        F=os.path.dirname(os.path.realpath(__file__)) + '/DST_0/MODEL/dst_model_'+str(iterate)+'_.hdf5'
             
         model = build_model(external_dim=False,CFN=CF)
         if trainDST:
@@ -166,7 +166,7 @@ if XDST:
         print('RMSE  MAE')
         print(for_show)
         
-        np.save('DST_SCORE/dst_score.npy',[RMSE,MAE])
+        np.save(os.path.dirname(os.path.realpath(__file__)) + '/DST_0/SCORE/dst_score.npy',[RMSE,MAE])
             
         time_end=time.time()
             
@@ -227,7 +227,7 @@ if X11:
                       is_pt=is_pt,P_N=P_N,T_F=T_F,PT_F=PT_F,T=T,     
                       drop=drop)            
         
-        file_conv='DeepSTN_11/MODEL/DeepSTN_11_model_'+str(iterate)+'.hdf5'
+        file_conv=os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_11/MODEL/DeepSTN_11_model_'+str(iterate)+'.hdf5'
         #train conv_model
         if train11:
             model_checkpoint=ModelCheckpoint(
@@ -276,7 +276,7 @@ if X11:
         print('RMSE  MAE')
         print(for_show)
         
-        np.save('DeepSTN_11/SCORE/DeepSTN_11_score3.npy',[RMSE,MAE])
+        np.save(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_11/SCORE/DeepSTN_11_score3.npy',[RMSE,MAE])
             
         time_end=time.time()
         print('iterate cost',time_end-time_start)
@@ -336,7 +336,7 @@ if X10:
                       is_pt=is_pt,P_N=P_N,T_F=T_F,PT_F=PT_F,T=T,     
                       drop=drop)            
         
-        file_conv='DeepSTN_10/MODEL/DeepSTN_10_model_'+str(iterate)+'.hdf5'
+        file_conv=os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_10/MODEL/DeepSTN_10_model_'+str(iterate)+'.hdf5'
         #train conv_model
         if train10:
             model_checkpoint=ModelCheckpoint(
@@ -385,7 +385,7 @@ if X10:
         print('RMSE  MAE')
         print(for_show)
         
-        np.save('DeepSTN_10/SCORE/DeepSTN_10_score.npy',[RMSE,MAE])
+        np.save(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_10/SCORE/DeepSTN_10_score.npy',[RMSE,MAE])
             
         time_end=time.time()
         print('iterate cost',time_end-time_start)
@@ -445,7 +445,7 @@ if X01:
                       is_pt=is_pt,P_N=P_N,T_F=T_F,PT_F=PT_F,T=T,     
                       drop=drop)            
         
-        file_conv='DeepSTN_01/MODEL/DeepSTN_01_model_'+str(iterate)+'.hdf5'
+        file_conv=os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_01/MODEL/DeepSTN_01_model_'+str(iterate)+'.hdf5'
         #train conv_model
         if train01:
             model_checkpoint=ModelCheckpoint(
@@ -494,7 +494,7 @@ if X01:
         print('RMSE  MAE')
         print(for_show)
         
-        np.save('DeepSTN_01/SCORE/DeepSTN_01_score.npy',[RMSE,MAE])
+        np.save(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_01/SCORE/DeepSTN_01_score.npy',[RMSE,MAE])
             
         time_end=time.time()
         print('iterate cost',time_end-time_start)
@@ -554,7 +554,7 @@ if X00:
                       is_pt=is_pt,P_N=P_N,T_F=T_F,PT_F=PT_F,T=T,     
                       drop=drop)            
         
-        file_conv='DeepSTN_00/MODEL/DeepSTN_00_model_'+str(iterate)+'.hdf5'
+        file_conv=os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_00/MODEL/DeepSTN_00_model_'+str(iterate)+'.hdf5'
         #train conv_model
         if train00:
             model_checkpoint=ModelCheckpoint(
@@ -603,7 +603,7 @@ if X00:
         print('RMSE  MAE')
         print(for_show)
         
-        np.save('DeepSTN_00/SCORE/DeepSTN_00_score.npy',[RMSE,MAE])
+        np.save(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_00/SCORE/DeepSTN_00_score.npy',[RMSE,MAE])
             
         time_end=time.time()
         print('iterate cost',time_end-time_start)
@@ -618,30 +618,30 @@ np.set_printoptions(precision=4, suppress=True)
 print('MODEL                     RMSE  MAE')
 if 0:
     print('ResNet                  :',end=' ')
-    [RMSE,MAE]=np.load('DST_SCORE/dst_score.npy')
+    [RMSE,MAE]=np.load(os.path.dirname(os.path.realpath(__file__)) + '/DST_0/SCORE/dst_score.npy')
     for_show=np.concatenate([RMSE,MAE],axis=1)*MM/2
     print(for_show)   
 if 0:
     print('DeepSTN                 :',end=' ')
-    [RMSE,MAE]=np.load('DeepSTN_00/SCORE/DeepSTN_00_score.npy')
+    [RMSE,MAE]=np.load(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_00/SCORE/DeepSTN_00_score.npy')
     for_show=np.concatenate([RMSE,MAE],axis=1)*MM/2
     for_show=np.mean(for_show,axis=0)
     print(for_show)   
 if 1:
     print('DeepSTN+ResPlus         :',end=' ')
-    [RMSE,MAE]=np.load('DeepSTN_10/SCORE/DeepSTN_10_score.npy')
+    [RMSE,MAE]=np.load(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_10/SCORE/DeepSTN_10_score.npy')
     for_show=np.concatenate([RMSE,MAE],axis=1)*MM/2
     for_show=np.mean(for_show,axis=0)
     print(for_show)   
 if 0:
     print('DeepSTN+PoI&Time        :',end=' ')
-    [RMSE,MAE]=np.load('DeepSTN_01/SCORE/DeepSTN_01_score.npy')
+    [RMSE,MAE]=np.load(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_01/SCORE/DeepSTN_01_score.npy')
     for_show=np.concatenate([RMSE,MAE],axis=1)*MM/2
     for_show=np.mean(for_show,axis=0)
     print(for_show)   
 if 1:
     print('DeepSTN+ResPlus+PoI&Time:',end=' ')
-    [RMSE,MAE]=np.load('DeepSTN_11/SCORE/DeepSTN_11_score3.npy')
+    [RMSE,MAE]=np.load(os.path.dirname(os.path.realpath(__file__)) + '/DeepSTN_11/SCORE/DeepSTN_11_score3.npy')
     for_show=np.concatenate([RMSE,MAE],axis=1)*MM/2
     for_show=np.mean(for_show,axis=0)
     print(for_show)   
