@@ -57,8 +57,8 @@ T_closeness, T_period, T_trend = 1, T, T * 7
 days_test = 14
 len_test = T * days_test
 
-all_data_path = "/content/drive/My Drive/CSE-8673-ML-Data/"
-# all_data_path = "/home/clinamen/school/ML2020/project/forecast/"
+# all_data_path = "/content/drive/My Drive/CSE-8673-ML-Data/"
+all_data_path = "/home/clinamen/school/ML2020/project/forecast/"
 
 # loading data
 all_data = np.load(f"{all_data_path}data_W{W}xH{H}.npy")
@@ -146,7 +146,7 @@ if XDST:
             print('=' * 10)
             print("training model...")
             history = model.fit(X_train, Y_train,
-                                epoch=epoch,
+                                epochs=epoch,
                                 batch_size=batch_size,
                                 validation_split=0.1,
                                 callbacks=[model_checkpoint],
