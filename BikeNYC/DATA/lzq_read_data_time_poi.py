@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 class MM:
     def __init__(self,MM_max,MM_min):
@@ -7,7 +8,7 @@ class MM:
 
 def lzq_load_data(len_test,len_closeness,len_period,len_trend,T_closeness=1,T_period=24,T_trend=24*7):
     
-    all_data=np.load('./DeepSTNv2/BikeNYC/DATA/dataBikeNYC/flow_data.npy')
+    all_data=np.load(os.path.dirname(os.path.realpath(__file__)) + '/dataBikeNYC/flow_data.npy')
     len_total,feature,map_height,map_width=all_data.shape
     #all_data=np.arange(48*24*7*256).reshape(-1,2,16,8)
     #len_total,feature,map_height,map_width=all_data.shape
@@ -81,7 +82,7 @@ def lzq_load_data(len_test,len_closeness,len_period,len_trend,T_closeness=1,T_pe
     print('len_train='+str(len_train))
     print('len_test ='+str(len_test ))
     
-    poi=np.load('./DeepSTNv2/BikeNYC/DATA/dataBikeNYC/poi_data.npy')
+    poi=np.load(os.path.dirname(os.path.realpath(__file__)) + '/dataBikeNYC/flow_data.npy')
     for i in range(poi.shape[0]):
         poi[i]=poi[i]/np.max(poi[i])
     P_train=np.repeat(poi.reshape(1,poi.shape[0],map_height,map_width),len_train,axis=0)
