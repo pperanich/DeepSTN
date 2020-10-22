@@ -82,7 +82,7 @@ def lzq_load_data(len_test,len_closeness,len_period,len_trend,T_closeness=1,T_pe
     print('len_train='+str(len_train))
     print('len_test ='+str(len_test ))
     
-    poi=np.load(os.path.dirname(os.path.realpath(__file__)) + '/dataBikeNYC/flow_data.npy')
+    poi=np.load(os.path.dirname(os.path.realpath(__file__)) + '/dataBikeNYC/poi_data.npy')
     for i in range(poi.shape[0]):
         poi[i]=poi[i]/np.max(poi[i])
     P_train=np.repeat(poi.reshape(1,poi.shape[0],map_height,map_width),len_train,axis=0)
