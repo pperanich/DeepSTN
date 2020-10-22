@@ -55,7 +55,7 @@ len_test = T * days_test
 
 # loading data
 all_data = np.load(f"/content/drive/My Drive/CSE-8673-ML-Data/data_W{W}xH{H}.npy")
-poi = np.load(os.path.dirname(os.path.realpath(__file__)) + '/dataBikeNYC/poi_data.npy')
+poi = np.load(os.path.dirname(os.path.realpath(__file__)) + '/DATA/dataBikeNYC/poi_data.npy')
 
 #the number of repetition and if retrain the model
 iterate_num=10
