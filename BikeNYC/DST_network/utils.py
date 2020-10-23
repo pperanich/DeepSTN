@@ -52,7 +52,7 @@ class STResNetHelper(BaseHelper):
 
         adam = Adam(lr=self.lr)
         model.compile(loss='mse', optimizer=adam, metrics=[metrics.rmse, metrics.mae])
-        model.summary()
+        # model.summary()
         return model
 
     def train(self, model, X_train, Y_train, epochs=10, batch_size=32):
@@ -65,6 +65,6 @@ class STResNetHelper(BaseHelper):
 
     def evaluate(self, model, X_test, Y_test):
         score = model.evaluate(X_test, Y_test, batch_size=32, verbose=0)
-        print('Test  score:', end=' ')
+        print('(loss, rmse, mse):', end=' ')
         np.set_printoptions(precision=6, suppress=True)
         print(np.array(score))
