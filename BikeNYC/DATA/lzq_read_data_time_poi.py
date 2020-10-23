@@ -12,7 +12,7 @@ class MM:
 def intervals_to(date_to, T_secs = 3600, date_from='2019-09-01'):
     d_from = datetime.datetime.strptime(date_from, '%Y-%m-%d')
     d_to = datetime.datetime.strptime(date_to, '%Y-%m-%d')
-    return (d_to - d_from).total_seconds() // T_secs
+    return int((d_to - d_from).total_seconds() // T_secs)
 
 
 def prepare_data(all_data, poi, len_test, len_closeness, len_period, len_trend, T_closeness=1, T_period=24,
