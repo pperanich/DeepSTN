@@ -15,14 +15,22 @@ def intervals_to(date_to, T_secs = 3600, date_from='2019-09-01'):
     return int((d_to - d_from).total_seconds() // T_secs)
 
 
+def normalize_data(all_data):
+    mm = MM(np.max(all_data), np.min(all_data))
+    all_data = (2.0 * all_data - (mm.max + mm.min)) / (mm.max - mm.min)
+    print('max=', mm.max, ' min=', mm.min)
+    print('all_data shape: ', all_data.shape)
+    print('mean=', np.mean(all_data), ' variance=', np.std(all_data))
+    return all_data, mm
+
+
 def prepare_data(all_data, poi, len_test, len_closeness, len_period, len_trend, T_closeness=1, T_period=24,
                  T_trend=24 * 7):
     len_total, feature, map_height, map_width = all_data.shape
     # all_data=np.arange(48*24*7*256).reshape(-1,2,16,8)
     # len_total,feature,map_height,map_width=all_data.shape
-    print('all_data shape: ', all_data.shape)
-    mm = MM(np.max(all_data), np.min(all_data))
-    print('max=', mm.max, ' min=', mm.min)
+
+    all_data, mm = normalize_data(all_data)
 
     # for time
     time = np.arange(len_total, dtype=int)
@@ -38,9 +46,6 @@ def prepare_data(all_data, poi, len_test, len_closeness, len_period, len_trend, 
         matrix_day[i, time_day[i], :, :] = 1
     # con
     matrix_T = np.concatenate((matrix_hour, matrix_day), axis=1)
-
-    all_data = (2.0 * all_data - (mm.max + mm.min)) / (mm.max - mm.min)
-    print('mean=', np.mean(all_data), ' variance=', np.std(all_data))
 
     if len_trend > 0:
         number_of_skip_hours = T_trend * len_trend
