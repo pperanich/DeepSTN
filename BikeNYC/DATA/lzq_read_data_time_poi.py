@@ -50,6 +50,7 @@ def prepare_data(all_data, poi, len_test, len_closeness, len_period, len_trend, 
         number_of_skip_hours = T_closeness * len_closeness
     else:
         print("wrong")
+
     print('number_of_skip_hours:', number_of_skip_hours)
 
     Y = all_data[number_of_skip_hours:len_total]

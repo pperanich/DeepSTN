@@ -1,3 +1,6 @@
 tensorflow
 keras
 setproctitle
+geopandas
+shapely
+pickles
