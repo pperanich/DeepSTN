@@ -134,7 +134,7 @@ if XDST:
             print('=' * 10)
             print("training model...")
             history = model.fit(X_train, Y_train,
-                                nb_epoch=epoch,
+                                epochs=epoch,
                                 batch_size=batch_size,
                                 validation_split=0.1,
                                 callbacks=[model_checkpoint],
