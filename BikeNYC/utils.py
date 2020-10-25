@@ -3,6 +3,7 @@ from keras.optimizers import Adam
 from tensorflow.python.keras.callbacks import ModelCheckpoint
 from DST_network.STResNet import stresnet
 import DST_network.metrics as metrics
+from DeepSTN_network.DeepSTN_net import DeepSTN
 
 
 class BaseHelper:
@@ -41,6 +42,47 @@ class BaseHelper:
         model.load_weights(self._get_model_filename())
 
 
+class DeepSTNHelper(BaseHelper):
+    def build_model(self, is_plus=False):
+        pre_F = 64
+        conv_F = 64
+        R_N = 2
+
+        plus = 8
+        rate = 1
+
+        is_pt = False
+        P_N = 9
+        T_F = 7 * 8
+        PT_F = 9
+
+        drop = 0.1
+
+        model = DeepSTN(H=self.H, W=self.W, channel=self.channel,
+                        c=self.len_closeness, p=self.len_period,
+                        pre_F=pre_F, conv_F=conv_F, R_N=R_N,
+                        is_plus=is_plus,
+                        plus=plus, rate=rate,
+                        is_pt=is_pt, P_N=P_N, T_F=T_F, PT_F=PT_F, T=T,
+                        drop=drop)
+
+        return model
+
+    def train(self, model, X_train, Y_train, epochs=10, batch_size=32):
+        X_train_input = np.concatenate((X_train[0], X_train[1], X_train[2]),axis=1)
+        model.fit(X_train_input, Y_train,
+                  epochs=epochs,
+                  batch_size=batch_size,
+                  validation_split=0.1,
+                  callbacks=[self._get_model_checkpoint()],
+                  verbose=1)
+
+    def evaluate(self, model, X_test, Y_test):
+        X_test_input = np.concatenate((X_test[0], X_test[1], X_test[2] ),axis=1)
+        score = model.evaluate(X_test_input, Y_test, batch_size=32, verbose=0)
+        print(dict(zip(model.metrics_names, score)))
+
+
 class STResNetHelper(BaseHelper):
     def build_model(self, external_dim=False, R_N=4, CF=64):
         c_conf = (self.len_closeness, self.channel, self.H, self.W) if self.len_closeness > 0 else None
@@ -65,6 +107,4 @@ class STResNetHelper(BaseHelper):
 
     def evaluate(self, model, X_test, Y_test):
         score = model.evaluate(X_test, Y_test, batch_size=32, verbose=0)
-        print('(loss, rmse, mse):', end=' ')
-        np.set_printoptions(precision=6, suppress=True)
-        print(np.array(score))
+        print(dict(zip(model.metrics_names, score)))
