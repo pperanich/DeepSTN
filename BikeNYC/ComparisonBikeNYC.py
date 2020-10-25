@@ -56,7 +56,7 @@ len_test = T * days_test
 #the number of repetition and if retrain the model
 iterate_num=10
 
-XDST=0  #DST
+XDST=1  #DST
 X11=1   #DSTN+ResPlus+PoI&Time
 X10=1   #DSTN+ResPlus
 X01=1   #DSTN+PoI&Time
