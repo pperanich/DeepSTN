@@ -127,7 +127,7 @@ if XDST:
                 monitor='val_rmse',
                 verbose=1,
                 save_best_only=True,
-                save_weights_only=False,
+                save_weights_only=True,
                 mode='min',
                 period=1)
                 
