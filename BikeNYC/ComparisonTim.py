@@ -57,11 +57,11 @@ T_closeness, T_period, T_trend = 1, T, T * 7
 days_test = 14
 len_test = T * days_test
 
-# all_data_path = "/content/drive/My Drive/CSE-8673-ML-Data/"
-all_data_path = "/home/clinamen/school/ML2020/project/forecast/"
+all_data_path = "/content/drive/My Drive/CSE-8673-ML-Data/"
+# all_data_path = "/home/clinamen/school/ML2020/project/forecast/"
 
 # loading data
-all_data = np.load(f"{all_data_path}data_W{W}xH{H}.npy")
+all_data = np.load(f"{all_data_path}data_W{W}xH{H}.npy")[:,0:2]
 poi = np.load(os.path.dirname(os.path.realpath(__file__)) + '/DATA/dataBikeNYC/poi_data.npy')
 
 # the number of repetition and if retrain the model
