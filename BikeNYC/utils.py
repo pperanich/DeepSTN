@@ -42,6 +42,24 @@ class BaseHelper:
     def load(self, model):
         model.load_weights(self._get_model_filename())
 
+    def evaluate(self, model, X_test, Y_test):
+        score = model.evaluate(self.to_model_input(X_test), Y_test, batch_size=32, verbose=0)
+        print(dict(zip(model.metrics_names, score)))
+
+    def predict(self, model, X):
+        return model.predict(self.to_model_input(X))
+
+    def train(self, model, X_train, Y_train, epochs=10, batch_size=32):
+        model.fit(self.to_model_input(X_train), Y_train,
+                  epochs=epochs,
+                  batch_size=batch_size,
+                  validation_split=0.1,
+                  callbacks=[self._get_model_checkpoint()],
+                  verbose=1)
+
+    def to_model_input(self, X):
+        return X
+
 
 class DeepSTNHelper(BaseHelper):
     def build_model(self, is_plus=False):
@@ -69,19 +87,8 @@ class DeepSTNHelper(BaseHelper):
 
         return model
 
-    def train(self, model, X_train, Y_train, epochs=10, batch_size=32):
-        X_train_input = np.concatenate((X_train[0], X_train[1], X_train[2]),axis=1)
-        model.fit(X_train_input, Y_train,
-                  epochs=epochs,
-                  batch_size=batch_size,
-                  validation_split=0.1,
-                  callbacks=[self._get_model_checkpoint()],
-                  verbose=1)
-
-    def evaluate(self, model, X_test, Y_test):
-        X_test_input = np.concatenate((X_test[0], X_test[1], X_test[2] ),axis=1)
-        score = model.evaluate(X_test_input, Y_test, batch_size=32, verbose=0)
-        print(dict(zip(model.metrics_names, score)))
+    def to_model_input(self, X):
+        return np.concatenate((X[0], X[1], X[2]), axis=1)
 
 
 class STResNetHelper(BaseHelper):
@@ -97,15 +104,3 @@ class STResNetHelper(BaseHelper):
         model.compile(loss='mse', optimizer=adam, metrics=[metrics.rmse, metrics.mae])
         # model.summary()
         return model
-
-    def train(self, model, X_train, Y_train, epochs=10, batch_size=32):
-        model.fit(X_train, Y_train,
-                  epochs=epochs,
-                  batch_size=batch_size,
-                  validation_split=0.1,
-                  callbacks=[self._get_model_checkpoint()],
-                  verbose=1)
-
-    def evaluate(self, model, X_test, Y_test):
-        score = model.evaluate(X_test, Y_test, batch_size=32, verbose=0)
-        print(dict(zip(model.metrics_names, score)))
