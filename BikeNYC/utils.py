@@ -83,7 +83,7 @@ class DeepSTNHelper(BaseHelper):
                         is_plus=is_plus,
                         plus=plus, rate=rate,
                         is_pt=is_pt, P_N=P_N, T_F=T_F, PT_F=PT_F, T=self.T,
-                        drop=drop)
+                        drop=drop, is_summary=False)
 
         return model
 
