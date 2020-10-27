@@ -13,35 +13,35 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import metrics
 
 # Relu-BN-Conv2D 3x3
-def conv_unit0(Fin,Fout,drop,H,W):
+def conv_unit0(Fin,Fout,drop,H,W, seed):
     unit_input=Input(shape=(Fin,H,W))
     
     unit_conv=Activation('relu')(unit_input)
     unit_conv=BatchNormalization()(unit_conv)
-    unit_conv=Dropout(drop)(unit_conv)
+    unit_conv=Dropout(drop, seed=seed)(unit_conv)
     unit_output=Conv2D(filters=Fout,kernel_size=(3,3),padding="same")(unit_conv)
     unit_model=Model(inputs=unit_input,outputs=unit_output)
     print('kernel=(3,3)')
     return unit_model
 
 # Relu-BN-Conv2D 1x1
-def conv_unit1(Fin,Fout,drop,H,W):
+def conv_unit1(Fin,Fout,drop,H,W, seed):
     unit_input=Input(shape=(Fin,H,W))
     
     unit_conv=Activation('relu')(unit_input)
     unit_conv=BatchNormalization()(unit_conv)
-    unit_conv=Dropout(drop)(unit_conv)
+    unit_conv=Dropout(drop, seed=seed)(unit_conv)
     unit_output=Conv2D(filters=Fout,kernel_size=(1,1),padding="same")(unit_conv)
     unit_model=Model(inputs=unit_input,outputs=unit_output)
     print('kernel=(1,1)')
     return unit_model
 
 # efficient version of Res_plus
-def Res_plus_E(name,F,Fplus,rate,drop,H,W):
+def Res_plus_E(name,F,Fplus,rate,drop,H,W, seed):
     cl_input=Input(shape=(F,H,W))
 
     #normal channels
-    cl_conv1A=conv_unit0(F,F-Fplus,drop,H,W)(cl_input)
+    cl_conv1A=conv_unit0(F,F-Fplus,drop,H,W, seed)(cl_input)
 
     #separated channels
     if rate == 1:
@@ -62,7 +62,7 @@ def Res_plus_E(name,F,Fplus,rate,drop,H,W):
     #merge
     cl_conv1=Concatenate(axis=1)([cl_conv1A,cl_conv1B])
 
-    cl_conv2=conv_unit0(F,F,drop,H,W)(cl_conv1)
+    cl_conv2=conv_unit0(F,F,drop,H,W, seed)(cl_conv1)
 
     cl_out=Add()([cl_input,cl_conv2])
 
@@ -71,10 +71,10 @@ def Res_plus_E(name,F,Fplus,rate,drop,H,W):
     return cl_model
 
 # new resdual block
-def Res_plus(name,F,Fplus,rate,drop,H,W):
+def Res_plus(name,F,Fplus,rate,drop,H,W, seed):
     cl_input=Input(shape=(F,H,W))
     
-    cl_conv1A=conv_unit0(F,F-Fplus,drop,H,W)(cl_input)
+    cl_conv1A=conv_unit0(F,F-Fplus,drop,H,W, seed)(cl_input)
     
     if rate == 1:
         cl_conv1B=cl_input
@@ -92,7 +92,7 @@ def Res_plus(name,F,Fplus,rate,drop,H,W):
 
     cl_conv1=Concatenate(axis=1)([cl_conv1A,cl_conv1B])
     
-    cl_conv2=conv_unit0(F,F,drop,H,W)(cl_conv1)
+    cl_conv2=conv_unit0(F,F,drop,H,W, seed)(cl_conv1)
     
     cl_out=Add()([cl_input,cl_conv2])
     
@@ -101,12 +101,12 @@ def Res_plus(name,F,Fplus,rate,drop,H,W):
     return cl_model
 
 # normal residual block
-def Res_normal(name,F,drop,H,W):
+def Res_normal(name,F,drop,H,W, seed):
     cl_input=Input(shape=(F,H,W))
     
-    cl_conv1=conv_unit0(F,F,drop,H,W)(cl_input)
+    cl_conv1=conv_unit0(F,F,drop,H,W, seed)(cl_input)
    
-    cl_conv2=conv_unit0(F,F,drop,H,W)(cl_conv1)
+    cl_conv2=conv_unit0(F,F,drop,H,W, seed)(cl_conv1)
     
     cl_out=Add()([cl_input,cl_conv2])
     
@@ -225,7 +225,7 @@ def DeepSTN(H=21,W=12,channel=2,      #H-map_height W-map_width channel-map_chan
             is_summary=True, #show detail
             lr=0.0002,
             kernel1=1, #kernel1 decides whether early-fusion uses conv_unit0 or conv_unit1, 1 recommended
-            isPT_F=1): #isPT_F decides whether PT_model uses one more Conv after multiplying PoI and Time, 1 recommended
+            isPT_F=1, seed=None): #isPT_F decides whether PT_model uses one more Conv after multiplying PoI and Time, 1 recommended
     
     all_channel = channel * (c+p+t)
             
@@ -255,32 +255,32 @@ def DeepSTN(H=21,W=12,channel=2,      #H-map_height W-map_width channel-map_chan
  
         cpt_con1=Concatenate(axis=1)([c_out1,p_out1,t_out1,poi_time])
         if kernel1:
-            cpt=conv_unit1(pre_F*3+PT_F*isPT_F+P_N*(not isPT_F),conv_F,drop,H,W)(cpt_con1)
+            cpt=conv_unit1(pre_F*3+PT_F*isPT_F+P_N*(not isPT_F),conv_F,drop,H,W, seed)(cpt_con1)
         else:
-            cpt=conv_unit0(pre_F*3+PT_F*isPT_F+P_N*(not isPT_F),conv_F,drop,H,W)(cpt_con1)
+            cpt=conv_unit0(pre_F*3+PT_F*isPT_F+P_N*(not isPT_F),conv_F,drop,H,W, seed)(cpt_con1)
     
     else:
         cpt_con1=Concatenate(axis=1)([c_out1,p_out1,t_out1])
         if kernel1:
-            cpt=conv_unit1(pre_F*3,conv_F,drop,H,W)(cpt_con1)
+            cpt=conv_unit1(pre_F*3,conv_F,drop,H,W, seed)(cpt_con1)
         else:
-            cpt=conv_unit0(pre_F*3,conv_F,drop,H,W)(cpt_con1)  
+            cpt=conv_unit0(pre_F*3,conv_F,drop,H,W, seed)(cpt_con1)
      
     if is_plus:
         if is_plus_efficient:
             for i in range(R_N):
-                cpt=Res_plus_E('Res_plus_'+str(i+1),conv_F,plus,rate,drop,H,W)(cpt)
+                cpt=Res_plus_E('Res_plus_'+str(i+1),conv_F,plus,rate,drop,H,W, seed)(cpt)
         else:
             for i in range(R_N):
-                cpt=Res_plus('Res_plus_'+str(i+1),conv_F,plus,rate,drop,H,W)(cpt)
+                cpt=Res_plus('Res_plus_'+str(i+1),conv_F,plus,rate,drop,H,W, seed)(cpt)
 
     else:  
         for i in range(R_N):
-            cpt=Res_normal('Res_normal_'+str(i+1),conv_F,drop,H,W)(cpt)
+            cpt=Res_normal('Res_normal_'+str(i+1),conv_F,drop,H,W, seed)(cpt)
 
     cpt_conv2=Activation('relu')(cpt)
     cpt_out2=BatchNormalization()(cpt_conv2)
-    cpt_conv1=Dropout(drop)(cpt_out2)
+    cpt_conv1=Dropout(drop, seed=seed)(cpt_out2)
     cpt_conv1=Conv2D(filters=channel,kernel_size=(1, 1),padding="same")(cpt_conv1)
     cpt_out1=Activation('tanh')(cpt_conv1)
             

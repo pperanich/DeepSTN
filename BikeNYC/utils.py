@@ -10,7 +10,7 @@ class BaseHelper:
     def __init__(self, model_name, channel, H, W, len_test,
                  len_closeness, len_period,
                  len_trend, T_closeness,
-                 T_period, T_trend, model_save_path, lr=0.0002, T=24):
+                 T_period, T_trend, model_save_path, lr=0.0002, T=24, seed=None):
         self.model_name = model_name
         self.model_save_path = model_save_path
         self.lr = lr
@@ -25,6 +25,7 @@ class BaseHelper:
         self.T_closeness = T_closeness
         self.T_trend = T_trend
         self.T = T
+        self.seed = seed
 
     def _get_model_filename(self):
         return self.model_save_path + '/' + self.model_name + '.hdf5'
@@ -83,7 +84,7 @@ class DeepSTNHelper(BaseHelper):
                         is_plus=is_plus,
                         plus=plus, rate=rate,
                         is_pt=is_pt, P_N=P_N, T_F=T_F, PT_F=PT_F, T=self.T,
-                        drop=drop, is_summary=False)
+                        drop=drop, is_summary=False, seed=self.seed)
 
         return model
 
